@@ -13,15 +13,16 @@ button.on{background:var(--ok);color:#fff;border-color:var(--ok)}button.p{backgr
 .pz{display:grid;grid-template-columns:70px 1fr 1fr;gap:8px;align-items:center;margin:6px 0}.pz input{width:100%}.pz.s .z{color:var(--r);font-weight:700}.v{display:block;text-align:center;font-size:.85rem}.v.al{color:var(--r);font-weight:700}
 input[type=text],input[type=number],input[type=date]{width:100%;padding:8px;border:1px solid var(--b);border-radius:8px;background:var(--c)}
 #tm{position:fixed;left:12px;right:12px;bottom:calc(66px + env(safe-area-inset-bottom,0));background:var(--a);color:var(--bg);border-radius:10px;padding:10px 14px;display:none;justify-content:space-between;align-items:center;font-size:1.3rem}
+.lk{text-decoration:underline dotted;cursor:pointer}#fi{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-end;justify-content:center;z-index:9}#fi>div{background:var(--bg);width:100%;max-width:560px;max-height:92%;overflow:auto;border-radius:14px 14px 0 0;padding:14px 14px calc(14px + env(safe-area-inset-bottom,0))}#fi li{margin:4px 0}.er{color:var(--r)}.fg{stroke:var(--t);fill:none;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}#fi svg{border:0}
 svg{width:100%;height:auto;background:var(--c);border:1px solid var(--b);border-radius:10px}
-</style></head><body><main id="app"></main><div id="tm"><span id="tl"></span><button onclick="stopT()">Stop</button></div>
+</style></head><body><main id="app"></main><div id="fi" onclick="if(event.target==this)cf()"><div id="fb"></div></div><div id="tm"><span id="tl"></span><button onclick="stopT()">Stop</button></div>
 <nav class="tabs"><button onclick="go('t')" id="bt">Aujourd'hui</button><button onclick="go('a')" id="ba">Suivi</button><button onclick="go('s')" id="bs">Réglages</button></nav>
 <script>
 const $=s=>document.querySelector(s),Kf=d=>new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10),Pd=k=>new Date(k+'T12:00'),
 esc=s=>String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])),
 mon=d=>{const x=new Date(d);x.setDate(x.getDate()-(x.getDay()+6)%7);return x};
-let S=JSON.parse(localStorage.getItem('ski1')||'null')||{start:Kf(mon(new Date())),thr:{kG:4,kD:4,aG:4,aD:3,gG:3,gD:3},log:{}};
-const sv=()=>localStorage.setItem('ski1',JSON.stringify(S));
+const KEY='ski1';let S=JSON.parse(localStorage.getItem(KEY)||'null')||{start:Kf(mon(new Date())),thr:{kG:4,kD:4,aG:4,aD:3,gG:3,gD:3},log:{}};
+const sv=()=>localStorage.setItem(KEY,JSON.stringify(S));
 let V='t',cur=Kf(new Date());
 // Programme : [nom, "texte B1|texte B2|texte B3" (vide = absent), unilatéral, "secondes par bloc"]
 const MOB=["Grenouille, amplitude réduite","90/90 (rotations de hanche assis)","Fente basse avec ouverture","Papillon actif + cercles de hanche","Mobilité libre au choix"],
@@ -47,7 +48,7 @@ function today(){const i=info(cur),e=S.log[cur]||{d:{},pain:{}},we=i.wd>4,m=e.mo
 let h=`<div class="nav"><button onclick="shift(-1)">◀</button><div style="text-align:center"><h1>${i.d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'})}</h1><span class="m">Semaine ${i.w} · bloc ${i.b}${PR[i.wd]&&m=='maison'?' · '+PR[i.wd].th:''}</span></div><button onclick="shift(1)">▶</button></div>
 <div class="row" style="margin:8px 0">${[['maison','Maison'],['piscine','Piscine'],['marche','Marche']].map(a=>`<button class="${m==a[0]?'p':''}" onclick="setM('${a[0]}')">${a[1]}</button>`).join('')}</div>`;
 if(m=='repos')h+=`<div class="card">Jour de repos. Tu peux quand même noter une piscine ou une marche ci-dessus.</div>`;
-else if(m=='maison'){h+=`<p class="m">${f}/${n} faits · 5–10 min</p>`;L.forEach(x=>{const ok=x.u?e.d[x.id+'G']&&e.d[x.id+'D']:e.d[x.id];h+=`<div class="card ex ${ok?'on':''}"><div><b>${esc(x.n)}</b><span class="m">${esc(x.t)}</span>${x.h?` <button onclick="startT(${x.h})">⏱ ${x.h} s</button>`:''}</div><div class="row">${x.u?['G','D'].map(s=>`<button class="${e.d[x.id+s]?'on':''}" onclick="tog('${x.id+s}')">${s}</button>`).join(''):`<button class="${e.d[x.id]?'on':''}" onclick="tog('${x.id}')">✓</button>`}</div></div>`})}
+else if(m=='maison'){h+=`<p class="m">${f}/${n} faits · 5–10 min</p>`;L.forEach(x=>{const ok=x.u?e.d[x.id+'G']&&e.d[x.id+'D']:e.d[x.id];h+=`<div class="card ex ${ok?'on':''}"><div><b class="lk" onclick="fiche('${x.id}')">${esc(x.n)} ⓘ</b><span class="m">${esc(x.t)}</span>${x.h?` <button onclick="startT(${x.h})">⏱ ${x.h} s</button>`:''}</div><div class="row">${x.u?['G','D'].map(s=>`<button class="${e.d[x.id+s]?'on':''}" onclick="tog('${x.id+s}')">${s}</button>`).join(''):`<button class="${e.d[x.id]?'on':''}" onclick="tog('${x.id}')">✓</button>`}</div></div>`})}
 else h+=`<div class="card"><b>${m=='marche'?'Marche sur tapis':'Piscine'}</b><p class="m">${m=='marche'?'À plat, 0 % de pente, 20–30 min, allure confortable. Stop si Achille D > 3/10.':'Nage douce 20–30 min, crawl ou dos. Éviter la brasse (genou et aine), à valider avec ton kiné.'}</p><div class="row"><button class="${e.fait?'on':''}" onclick="E(cur).fait=!E(cur).fait;sv();draw()">Séance faite</button><input type="number" placeholder="minutes" value="${e.min||''}" style="width:110px" onchange="E(cur).min=this.value;sv()"></div></div>`;
 h+=`<h2>Douleur en fin de séance</h2><div class="row"><button onclick="ras()">RAS (tout à 0)</button><button onclick="clr()">Effacer</button></div><div class="pz m"><span></span><span class="v">Gauche</span><span class="v">Droite</span></div>`;
 ZN.forEach(z=>{h+=`<div class="pz ${ZS.includes(z[1]+'G')||ZS.includes(z[1]+'D')?'s':''}"><span class="z">${z[0]}</span>`+['G','D'].map(s=>{const c=z[1]+s,v=e.pain[c],al=v!=null&&v>S.thr[c];return`<div><input type="range" min="0" max="10" value="${v??0}" oninput="pn('${c}',this.value)"><span class="v ${al?'al':''}" id="v${c}">${v==null?'–':v+'/10'}</span></div>`}).join('')+`</div>`});
@@ -67,5 +68,36 @@ function dl(n,t,m){const a=document.createElement('a');a.href=URL.createObjectUR
 function exp(f){if(f=='json')return dl('ski-log.json',JSON.stringify(S,null,1),'application/json');const R=['date,mode,semaine,bloc,exercices_faits,'+ZK.join(',')+',gene,note'];Object.keys(S.log).sort().forEach(k=>{const e=S.log[k],i=info(k);R.push([k,e.mode||'maison',i.w,i.b,cnt(k),...ZK.map(c=>e.pain[c]??''),'"'+(e.gene||'').replace(/"/g,'""')+'"','"'+(e.note||'').replace(/"/g,'""')+'"'].join(','))});dl('ski-log.csv',R.join('\n'),'text/csv')}
 function imp(f){const r=new FileReader();r.onload=()=>{try{const o=JSON.parse(r.result);if(!o.log)throw 0;S=o;sv();draw()}catch{alert('Fichier invalide')}};r.readAsText(f)}
 function sets(){return`<h1>Réglages</h1><div class="card"><b>Lundi de la semaine 1</b><input type="date" value="${S.start}" onchange="S.start=Kf(mon(Pd(this.value)));sv()"></div><div class="card"><b>Seuils d'alerte (0–10)</b><p class="m">À fixer avec ton kiné.</p>${ZK.map(c=>`<div class="pz" style="grid-template-columns:1fr 80px"><span>${ZN.find(z=>z[1]==c[0])[0]} ${c[1]=='G'?'gauche':'droite'}</span><input type="number" min="0" max="10" value="${S.thr[c]}" onchange="S.thr['${c}']=+this.value;sv()"></div>`).join('')}</div><p class="m">Programme de 12 semaines (3 blocs de 4). Au-delà, le bloc 3 continue. Contenu à faire valider par ton kiné.</p>`}
+
+// --- v2 : fiches et schémas animés ---
+const ST=[100,62,100,30,100,20,101,86,100,108,108,42,118,40],
+AN={squat:[ST,[78,80,98,52,103,42,112,82,100,108,112,54,124,52]],
+wall:[ST,[72,82,72,52,72,42,102,82,102,108,84,64,96,66]],
+calf:[ST,[100,54,100,22,100,12,101,78,100,100,108,34,118,32]],
+ankle:[[80,64,84,32,86,22,104,88,98,108,94,44,104,42],[92,68,94,36,96,26,116,84,98,108,104,48,114,46]],
+bridge:[[90,104,50,104,38,104,120,80,140,108,70,106,90,106],[90,76,50,100,38,102,120,72,140,108,70,104,90,106]],
+plank:[[100,80,50,74,38,70,130,86,160,100,50,96,64,106],[100,74,50,74,38,70,130,84,160,100,50,96,64,106]],
+balance:[ST,[100,62,100,30,100,20,101,86,100,108,108,42,118,40,112,74,104,90]],
+lunge:[ST,[100,84,100,54,100,44,118,84,112,108,108,66,118,64,96,100,70,104]],
+jump:[[100,80,102,52,104,42,114,82,100,108,114,54,126,52],[100,50,100,20,100,10,100,72,100,92,108,32,118,30]],
+hip:[[100,84,102,54,104,44,126,84,126,108,112,68,124,66,84,102,58,108],[96,96,104,62,108,52,128,88,126,108,114,76,124,84,78,106,52,108]]},
+CU={squat:"Pieds largeur d'épaules, poids réparti|Descente contrôlée, genoux dans l'axe des orteils|Remonte en poussant le sol|Genou qui rentre vers l'intérieur|Genou G : amplitude sans douleur ni instabilité",
+wall:"Dos plaqué au mur, cuisses vers l'horizontale|Genoux au-dessus des chevilles|Respire sans bloquer|Descendre trop bas au détriment du genou|Genou G : reste au-dessus de 90°, stop si douleur",
+calf:"Monte sur la pointe des pieds|Descente très lente (3 à 4 s)|Genoux tendus, poids sur l'avant du pied|Rebondir ou aller trop vite|Achille D : stop au-delà du seuil de douleur",
+ankle:"Pied à plat, genou vers le mur|Talon collé au sol|Mouvement lent, sans rebond|Talon qui décolle|Achille D : amplitude confortable",
+bridge:"Dos à plat, pieds près des fesses|Monte le bassin en serrant les fessiers|Corps aligné épaules-genoux|Cambrer le bas du dos|Unilatéral : même volume à gauche et à droite",
+plank:"Coudes sous les épaules, corps en ligne|Serre abdos et fessiers|Respire|Bassin qui s'affaisse ou monte|Arrête si le dos tire",
+balance:"Debout sur une jambe, bassin stable|Genou légèrement fléchi, dans l'axe du pied|Regard fixe devant|Hanche qui part sur le côté|Fais les deux côtés, le G sert de référence",
+lunge:"Grand pas en arrière, buste droit|Descends en contrôle, genou avant dans l'axe|Pousse dans le talon avant|Genou avant qui rentre|Genou G : amplitude réduite au début",
+jump:"Petit saut, réception souple et silencieuse|Genoux fléchis, dans l'axe|Seulement si l'Achille D est calme|Réception raide sur les talons|Bloc 3 seulement, à valider avec le kiné",
+hip:"Mouvement lent, sans rebond|Reste sous 3/10 de douleur|Respire, relâche la hanche|Forcer dans un pincement à l'aine|Aine D : amplitude réduite, stop si pincement (schéma générique)"},
+KM=[["Mobilité hanches","hip"],["Squat","squat"],["Chaise","wall"],["mollets","calf"],["Mobilité cheville","ankle"],["Pont","bridge"],["Planche","plank"],["Équilibre","balance"],["Fente","lunge"],["sauts","jump"]];
+let AF;const gi=i=>document.getElementById(i),PP=a=>a.length>14?a:[...a,a[6],a[7],a[8],a[9]];
+function fiche(id){const x=items(cur).find(v=>String(v.id)==id),k=(KM.find(m=>x.n.includes(m[0]))||[0,'squat'])[1],c=CU[k].split('|');
+gi('fb').innerHTML=`<div class="nav"><h1>${esc(x.n)}</h1><button onclick="cf()">Fermer</button></div><p class="m">${esc(x.t)}</p><img src="media/${k}.jpg" alt="" style="width:100%;border-radius:10px" onerror="this.remove()"><svg viewBox="0 0 200 120">${k=='wall'?'<path class="fg" style="stroke-width:2" d="M66 10V110"/>':''}<path class="fg" style="stroke-width:2" d="M10 110H190"/><path id="f2" class="fg" style="opacity:.4"/><path id="f1" class="fg"/><path id="f3" class="fg"/><path id="f4" class="fg"/><path id="ft" class="fg"/><circle id="f5" r="8" class="fg"/></svg><ul><li>${c[0]}</li><li>${c[1]}</li><li>${c[2]}</li></ul><p class="er">À éviter : ${c[3]}</p><p><b>Vigilance :</b> ${c[4]}</p><p class="m">Schéma générique. Pour une photo, ajoute media/${k}.jpg dans le dépôt.</p>`;
+gi('fi').style.display='flex';const [a,b]=AN[k].map(PP),t0=performance.now(),sa=(i,d)=>gi(i).setAttribute('d',d);
+const f=t=>{const u=(1-Math.cos((t-t0)/1e3*2.2))/2,p=a.map((v,i)=>v+(b[i]-v)*u),L=(i,j,q)=>`M${p[i]} ${p[i+1]}L${p[j]} ${p[j+1]}L${p[q]} ${p[q+1]}`;
+sa('f1',L(0,6,8));sa('f2',L(0,14,16));sa('f3',`M${p[2]} ${p[3]}L${p[0]} ${p[1]}`);sa('f4',L(2,10,12));sa('ft',p[9]>96?`M${p[8]} ${p[9]}L${p[8]+12} 108`:'');gi('f5').setAttribute('cx',p[4]);gi('f5').setAttribute('cy',p[5]);AF=requestAnimationFrame(f)};f(t0)}
+function cf(){cancelAnimationFrame(AF);gi('fi').style.display='none'}
 draw();if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js');
 </script></body></html>
